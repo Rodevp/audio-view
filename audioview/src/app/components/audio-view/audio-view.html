@@ -1,0 +1,8 @@
+<h1>Audio View</h1>
+
+<main>
+    <input type="file" accept="audio/*" (change)="onFileCharge($event)" />
+    <button (click)="playSound()">Play</button>
+    <button>Pause</button>
+    <button (click)="stop()">Stop</button>
+</main>
