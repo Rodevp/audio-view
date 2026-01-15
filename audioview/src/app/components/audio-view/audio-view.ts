@@ -16,6 +16,8 @@ export class AudioView {
   analyzer!: AnalyserNode;
   frequencyData!: Uint8Array<ArrayBuffer>;
   isPlaying = false;
+  startTime = 0;
+  pauseTime = 0;
 
   barsCount = 28;
   svgWidth = 600;
@@ -24,7 +26,6 @@ export class AudioView {
 
   updateBars = () => {
     if (!this.frequencyData) return;
-
     const groupSize = Math.floor(this.frequencyData.length / this.barsCount);
     const newBars = new Array(this.barsCount);
 
@@ -66,7 +67,6 @@ export class AudioView {
   readFrenquecyData = () => {
     if (!this.analyzer) return;
     this.analyzer.getByteFrequencyData(this.frequencyData);
-    console.log(this.frequencyData.slice(0, 10));
   }
 
   loop = () => {
@@ -102,9 +102,10 @@ export class AudioView {
     //conectando "voltimetro(analyzer) a la bateria(sourceNode)"
     this.sourceNode.buffer = this.audioBuffer;
     this.sourceNode.connect(this.analyzer);
-
     this.analyzer.connect(this.audioContext.destination);
-    this.sourceNode.start();
+
+    this.startTime = this.audioContext.currentTime - this.pauseTime;
+    this.sourceNode.start(0, this.pauseTime);
 
     this.sourceNode.onended = () => {
       this.sourceNode = null;
@@ -117,9 +118,21 @@ export class AudioView {
 
   }
 
+  pauseSound = () => {
+    if (!this.sourceNode) return;
+
+    this.pauseTime = this.audioContext.currentTime - this.startTime;
+    this.isPlaying = false;
+
+    this.sourceNode.stop();
+    this.sourceNode.disconnect();
+    this.sourceNode = null;
+  }
+
   stop = () => {
     if (!this.sourceNode) return;
     this.isPlaying = false;
+    this.pauseTime = 0;
     this.sourceNode.stop();
     this.sourceNode.disconnect();
     this.sourceNode = null;

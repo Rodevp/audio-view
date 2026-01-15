@@ -3,7 +3,7 @@
 <main>
     <input type="file" accept="audio/*" (change)="onFileCharge($event)" />
     <button (click)="playSound()">Play</button>
-    <button>Pause</button>
+    <button (click)="pauseSound()">Pause</button>
     <button (click)="stop()">Stop</button>
     <svg width="600" height="200" viewBox="0 0 600 200">
         @for (bar of bars; track $index) {
