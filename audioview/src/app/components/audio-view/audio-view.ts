@@ -37,11 +37,22 @@ export class AudioView {
   playSound() {
     if (!this.audioBuffer) return;
 
+    if (this.audioContext.state === "suspended") {
+      this.audioContext.resume();
+    }
+
+    if (this.sourceNode) {
+      this.sourceNode.stop();
+    }
+
     this.sourceNode = this.audioContext.createBufferSource();
     this.sourceNode.buffer = this.audioBuffer;
-
     this.sourceNode.connect(this.audioContext.destination);
     this.sourceNode.start();
+
+    this.sourceNode.onended = () => {
+      this.sourceNode = null;
+    };
 
   }
 
