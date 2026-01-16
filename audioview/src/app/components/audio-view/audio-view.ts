@@ -1,8 +1,9 @@
 import { Component, NgZone, ChangeDetectorRef, OnInit } from '@angular/core';
-import { AudioFrame } from '../../types/audio';
+import { AudioFrame, RadialPoint } from '../../types/audio';
 import { Bars } from '../bars/bars';
 import { Radial } from '../radial/radial';
 import { Wave } from "../wave/wave";
+import { UpdateGraphicsService } from '../../services/update-graphics';
 
 @Component({
   selector: 'app-audio-view',
@@ -12,7 +13,11 @@ import { Wave } from "../wave/wave";
 })
 export class AudioView implements OnInit {
 
-  constructor(private ngZone: NgZone, private changeDetectorRef: ChangeDetectorRef) { }
+  constructor(
+    private ngZone: NgZone,
+    private changeDetectorRef: ChangeDetectorRef,
+    private updateGraphicsService: UpdateGraphicsService
+  ) { }
 
   audioContext = new AudioContext();
   audioBuffer: AudioBuffer | null = null;
@@ -35,7 +40,7 @@ export class AudioView implements OnInit {
   radialBaseRadius = 100;
   radialIntensity = 5;
   radialMaxOffset = 10;
-  radialPoints: { x: number, y: number, angle: number }[] = [];
+  radialPoints: RadialPoint[] = [];
 
   //wave config
   waveformSamples = 64;        // cuántos puntos vamos a dibujar
@@ -57,52 +62,6 @@ export class AudioView implements OnInit {
 
       this.radialPoints.push({ x, y, angle });
     }
-
-  }
-
-  updateRadial = (frame: AudioFrame | null) => {
-    const centerX = this.svgWidth / 2;
-    const centerY = this.svgHeight / 2;
-
-    const dynamicRadius = this.radialBaseRadius + (frame?.bands.low! * this.radialIntensity * this.radialMaxOffset);
-
-    this.radialPoints = this.radialPoints.map(p => (
-      {
-        ...p,
-        x: centerX + Math.cos(p.angle) * dynamicRadius,
-        y: centerY + Math.sin(p.angle) * dynamicRadius
-      }
-    ))
-
-  }
-
-  updateBars = (frame: AudioFrame | null) => {
-    this.bars = frame?.spectrum
-      .slice(0, this.barsCount)
-      .map(v => v * this.svgHeight) || [];
-  }
-
-  updateWaveForm = (frame: AudioFrame | null) => {
-    const samples = frame?.waveform;
-    const step = Math.floor(samples!.length / this.waveformSamples);
-    const stepX = this.svgWidth / (this.waveformSamples - 1);
-
-    let path = '';
-
-    for (let i = 0; i < this.waveformSamples; i++) {
-      const sample = samples![i * step];
-      const x = i * stepX;
-      const y = this.waveformCenterY + sample * this.waveformAmplitude;
-
-      if (i === 0) {
-        path += `M ${x} ${y}`;
-      } else {
-        path += `L ${x} ${y}`;
-      }
-
-    }
-
-    this.wavePath = path;
 
   }
 
@@ -141,9 +100,9 @@ export class AudioView implements OnInit {
 
     this.ngZone.run(() => {
       console.log({ frame });
-      this.updateBars(frame);
-      this.updateRadial(frame);
-      this.updateWaveForm(frame);
+      this.bars = this.updateGraphicsService.updateBars(frame, { bars: this.bars, barsCount: this.barsCount, svgHeight: this.svgHeight });
+      this.radialPoints = this.updateGraphicsService.updateRadial(frame, { radialBaseRadius: this.radialBaseRadius, radialIntensity: this.radialIntensity, radialMaxOffset: this.radialMaxOffset, radialPoints: this.radialPoints, svgWidth: this.svgWidth, svgHeight: this.svgHeight });
+      this.wavePath = this.updateGraphicsService.updateWaveForm(frame, { waveformAmplitude: this.waveformAmplitude, waveformCenterY: this.waveformCenterY, waveformSamples: this.waveformSamples, svgWidth: this.svgWidth, wavePath: this.wavePath });
       this.changeDetectorRef.detectChanges();
     })
 
