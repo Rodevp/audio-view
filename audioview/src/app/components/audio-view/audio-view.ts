@@ -1,4 +1,4 @@
-import { Component, NgZone, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
 import { AudioFrame, RadialPoint } from '../../types/audio';
 import { Bars } from '../bars/bars';
 import { Radial } from '../radial/radial';
@@ -11,7 +11,7 @@ import { UpdateGraphicsService } from '../../services/update-graphics';
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
-export class AudioView implements OnInit {
+export class AudioView {
 
   constructor(
     private ngZone: NgZone,
@@ -47,23 +47,6 @@ export class AudioView implements OnInit {
   waveformAmplitude = 50;      // qué tanto sube y baja
   waveformCenterY = this.svgHeight / 2;
   wavePath = '';
-
-  initRadial = () => {
-    this.radialPoints = [];
-
-    const centerX = this.svgWidth / 2;
-    const centerY = this.svgHeight / 2;
-
-    for (let i = 0; i < this.radialPointsCount; i++) {
-      const angle = (Math.PI * 2 / this.radialPointsCount) * i;
-
-      const x = centerX + Math.cos(angle) * this.radialBaseRadius;
-      const y = centerY + Math.sin(angle) * this.radialBaseRadius;
-
-      this.radialPoints.push({ x, y, angle });
-    }
-
-  }
 
   onFileCharge(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
@@ -224,8 +207,5 @@ export class AudioView implements OnInit {
     this.sourceNode = null;
   }
 
-  ngOnInit(): void {
-    this.initRadial();
-  }
 
 }
