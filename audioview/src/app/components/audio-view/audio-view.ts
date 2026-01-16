@@ -1,4 +1,4 @@
-import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, NgZone, ChangeDetectorRef, OnInit } from '@angular/core';
 import { AudioFrame } from '../../types/audio';
 
 @Component({
@@ -7,7 +7,7 @@ import { AudioFrame } from '../../types/audio';
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
-export class AudioView {
+export class AudioView implements OnInit {
 
   constructor(private ngZone: NgZone, private changeDetectorRef: ChangeDetectorRef) { }
 
@@ -20,10 +20,51 @@ export class AudioView {
   startTime = 0;
   pauseTime = 0;
 
+  //bars config
   barsCount = 28;
   svgWidth = 600;
   svgHeight = 200;
   bars: number[] = new Array(this.barsCount).fill(10);
+
+  //radial config
+  radialPointsCount = 12;
+  radialBaseRadius = 100;
+  radialIntensity = 5;
+  radialMaxOffset = 10;
+  radialPoints: { x: number, y: number, angle: number }[] = [];
+
+  initRadial = () => {
+    this.radialPoints = [];
+
+    const centerX = this.svgWidth / 2;
+    const centerY = this.svgHeight / 2;
+
+    for (let i = 0; i < this.radialPointsCount; i++) {
+      const angle = (Math.PI * 2 / this.radialPointsCount) * i;
+
+      const x = centerX + Math.cos(angle) * this.radialBaseRadius;
+      const y = centerY + Math.sin(angle) * this.radialBaseRadius;
+
+      this.radialPoints.push({ x, y, angle });
+    }
+
+  }
+
+  updateRadial = (frame: AudioFrame | null) => {
+    const centerX = this.svgWidth / 2;
+    const centerY = this.svgHeight / 2;
+
+    const dynamicRadius = this.radialBaseRadius + (frame?.bands.low! * this.radialIntensity * this.radialMaxOffset);
+
+    this.radialPoints = this.radialPoints.map(p => (
+      {
+        ...p,
+        x: centerX + Math.cos(p.angle) * dynamicRadius,
+        y: centerY + Math.sin(p.angle) * dynamicRadius
+      }
+    ))
+
+  }
 
   updateBars = (frame: AudioFrame | null) => {
     this.bars = frame?.spectrum
@@ -67,6 +108,7 @@ export class AudioView {
     this.ngZone.run(() => {
       console.log({ frame });
       this.updateBars(frame);
+      this.updateRadial(frame);
       this.changeDetectorRef.detectChanges();
     })
 
@@ -186,6 +228,10 @@ export class AudioView {
     this.sourceNode.stop();
     this.sourceNode.disconnect();
     this.sourceNode = null;
+  }
+
+  ngOnInit(): void {
+    this.initRadial();
   }
 
 }
