@@ -25,22 +25,10 @@ export class AudioView {
   svgHeight = 200;
   bars: number[] = new Array(this.barsCount).fill(10);
 
-  updateBars = () => {
-    if (!this.frequencyData) return;
-    const groupSize = Math.floor(this.frequencyData.length / this.barsCount);
-    const newBars = new Array(this.barsCount);
-
-    for (let i = 0; i < this.barsCount; i++) {
-      let sum = 0;
-      for (let j = 0; j < groupSize; j++) {
-        sum += this.frequencyData[i * groupSize + j];
-      }
-      const value = sum / groupSize;
-      newBars[i] = (value / 255) * this.svgHeight;
-    }
-
-    this.bars = newBars;
-
+  updateBars = (frame: AudioFrame | null) => {
+    this.bars = frame?.spectrum
+      .slice(0, this.barsCount)
+      .map(v => v * this.svgHeight) || [];
   }
 
   onFileCharge(event: Event) {
@@ -78,7 +66,7 @@ export class AudioView {
 
     this.ngZone.run(() => {
       console.log({ frame });
-      this.bars = frame?.spectrum.slice(0, this.barsCount).map(v => v * this.svgHeight) || [];
+      this.updateBars(frame);
       this.changeDetectorRef.detectChanges();
     })
 
