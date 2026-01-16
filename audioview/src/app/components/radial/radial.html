@@ -1,0 +1,5 @@
+<svg width="600" height="250" viewBox="0 0 600 200">
+    @for (point of radialPoints(); track $index) {
+    <circle [attr.cx]="point.x" [attr.cy]="point.y" [attr.r]="radialIntensity()" fill="black" />
+    }
+</svg>

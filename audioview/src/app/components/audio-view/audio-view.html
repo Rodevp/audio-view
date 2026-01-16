@@ -1,26 +1,12 @@
-<h1>Audio View</h1>
-
 <main>
+    <h1>Audio Viewer</h1>
     <input type="file" accept="audio/*" (change)="onFileCharge($event)" />
     <button (click)="playSound()">Play</button>
     <button (click)="pauseSound()">Pause</button>
     <button (click)="stop()">Stop</button>
-    <svg width="600" height="200" viewBox="0 0 600 200">
-        @for (bar of bars; track $index) {
-        <rect [attr.x]="$index * (svgWidth / barsCount)" [attr.y]="svgHeight - bar" [attr.width]="svgWidth / barsCount"
-            [attr.height]="bar" fill="black" />
-        }
-    </svg>
 
-    <svg width="600" height="250" viewBox="0 0 600 200">
-        @for (point of radialPoints; track $index) {
-        <circle [attr.cx]="point.x" [attr.cy]="point.y" [attr.r]="radialIntensity" fill="black" />
-        }
-    </svg>
-
-    <svg width="600" height="250" viewBox="0 0 600 200">
-        <path [attr.d]="wavePath" fill="none" stroke="black" stroke-width="2" />
-    </svg>
-
+    <app-bars [bars]="bars" [svgWidth]="svgWidth" [svgHeight]="svgHeight" [barsCount]="barsCount"></app-bars>
+    <app-radial [radialPoints]="radialPoints" [radialIntensity]="radialIntensity"></app-radial>
+    <app-wave [wavePath]="wavePath"></app-wave>
 
 </main>

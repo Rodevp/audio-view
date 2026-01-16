@@ -1,9 +1,12 @@
 import { Component, NgZone, ChangeDetectorRef, OnInit } from '@angular/core';
 import { AudioFrame } from '../../types/audio';
+import { Bars } from '../bars/bars';
+import { Radial } from '../radial/radial';
+import { Wave } from "../wave/wave";
 
 @Component({
   selector: 'app-audio-view',
-  imports: [],
+  imports: [Bars, Radial, Wave],
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
