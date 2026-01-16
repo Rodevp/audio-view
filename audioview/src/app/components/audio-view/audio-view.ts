@@ -20,10 +20,11 @@ export class AudioView implements OnInit {
   startTime = 0;
   pauseTime = 0;
 
-  //bars config
-  barsCount = 28;
   svgWidth = 600;
   svgHeight = 200;
+
+  //bars config
+  barsCount = 28;
   bars: number[] = new Array(this.barsCount).fill(10);
 
   //radial config
@@ -32,6 +33,12 @@ export class AudioView implements OnInit {
   radialIntensity = 5;
   radialMaxOffset = 10;
   radialPoints: { x: number, y: number, angle: number }[] = [];
+
+  //wave config
+  waveformSamples = 64;        // cuántos puntos vamos a dibujar
+  waveformAmplitude = 50;      // qué tanto sube y baja
+  waveformCenterY = this.svgHeight / 2;
+  wavePath = '';
 
   initRadial = () => {
     this.radialPoints = [];
@@ -72,6 +79,30 @@ export class AudioView implements OnInit {
       .map(v => v * this.svgHeight) || [];
   }
 
+  updateWaveForm = (frame: AudioFrame | null) => {
+    const samples = frame?.waveform;
+    const step = Math.floor(samples!.length / this.waveformSamples);
+    const stepX = this.svgWidth / (this.waveformSamples - 1);
+
+    let path = '';
+
+    for (let i = 0; i < this.waveformSamples; i++) {
+      const sample = samples![i * step];
+      const x = i * stepX;
+      const y = this.waveformCenterY + sample * this.waveformAmplitude;
+
+      if (i === 0) {
+        path += `M ${x} ${y}`;
+      } else {
+        path += `L ${x} ${y}`;
+      }
+
+    }
+
+    this.wavePath = path;
+
+  }
+
   onFileCharge(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
 
@@ -109,6 +140,7 @@ export class AudioView implements OnInit {
       console.log({ frame });
       this.updateBars(frame);
       this.updateRadial(frame);
+      this.updateWaveForm(frame);
       this.changeDetectorRef.detectChanges();
     })
 
