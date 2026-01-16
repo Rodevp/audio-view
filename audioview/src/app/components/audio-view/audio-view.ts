@@ -1,4 +1,5 @@
 import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
+import { AudioFrame } from '../../types/audio';
 
 @Component({
   selector: 'app-audio-view',
@@ -73,13 +74,74 @@ export class AudioView {
     if (!this.isPlaying) return;
 
     this.readFrenquecyData();
+    const frame = this.createAudioFrame();
 
     this.ngZone.run(() => {
-      this.updateBars();
+      console.log({ frame });
+      this.bars = frame?.spectrum.slice(0, this.barsCount).map(v => v * this.svgHeight) || [];
       this.changeDetectorRef.detectChanges();
     })
 
     requestAnimationFrame(this.loop);
+  }
+
+  createAudioFrame = (): AudioFrame | null => {
+
+    /**
+     * 
+     * Creamos un fotograma del audio, esto nos va ayudar a jugar con la ui.
+     * Ya que nos dice que datos hay por cada segundo del audio(fotograma).
+     * 
+     */
+
+
+    if (!this.analyzer) return null;
+
+    //leemos las frecuencias de nuestro audio
+    const freqData = new Uint8Array(this.analyzer.frequencyBinCount);
+    this.analyzer.getByteFrequencyData(freqData);
+
+    //leemos los datos del tiempo de nuestro audio para jugar si queremos hacer ondas
+    const timeData = new Uint8Array(this.analyzer.fftSize);
+    this.analyzer.getByteTimeDomainData(timeData);
+
+    const spectrum = Array.from(freqData, v => v / 255);
+    const waveform = Array.from(timeData, v => (v - 128) / 128);
+
+    //calculamos el promedio de las frecuencias para que nos diga cuan duro esta el sonido
+    let energySum = 0;
+    for (const v of spectrum) energySum += v;
+    const energy = energySum / spectrum.length;
+
+    const low = this.averageRange(spectrum, 0, 0.33); //graves
+    const mid = this.averageRange(spectrum, 0.33, 0.66); //medios
+    const high = this.averageRange(spectrum, 0.66, 1); //agudos
+
+    return {
+      time: this.audioContext.currentTime,
+      spectrum,
+      waveform,
+      energy,
+      bands: {
+        low,
+        mid,
+        high
+      }
+    }
+
+  }
+
+  averageRange = (data: number[], from: number, to: number): number => {
+    const start = Math.floor(data.length * from);
+    const end = Math.floor(data.length * to);
+    let sum = 0;
+
+    for (let i = start; i < end; i++) {
+      sum += data[i];
+    }
+
+    return sum / (end - start || 1);
+
   }
 
   playSound = () => {
