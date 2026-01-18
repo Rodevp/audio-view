@@ -1,5 +1,5 @@
 import { Component, NgZone, ChangeDetectorRef, inject } from '@angular/core';
-import { AudioFrame, RadialPoint } from '../../types/audio';
+import { RadialPoint } from '../../types/audio';
 import { Bars } from '../bars/bars';
 import { Radial } from '../radial/radial';
 import { Wave } from "../wave/wave";
@@ -9,12 +9,7 @@ import { AudioService } from '../../services/audio';
 /**
  * 2 espacios
  * 
- * crear store para audio, tal vez configuracion del svg, tal vez para la configuracion
- * de los graficos.
- * 
- * crear servicios que modifiquen los mismos.
- * 
- * crear componentes para los controles (pausa, play, stop).
+ * crear componente para los controles (pausa, play, stop).
  * 
  * crear funcionalidad para intencambiar de grafico en tiempo real.
  *  
@@ -36,8 +31,6 @@ export class AudioView {
   updateGraphicsService = inject(UpdateGraphicsService);
 
   isPlaying = false;
-  startTime = 0;
-  pauseTime = 0;
 
   svgWidth = 600;
   svgHeight = 200;
