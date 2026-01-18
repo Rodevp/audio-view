@@ -9,4 +9,6 @@ export class AudioStore {
     analyzer = signal<AnalyserNode>(undefined!);
     sourceNode = signal<AudioBufferSourceNode | null>(null);
     frecuencyData = signal<Uint8Array<ArrayBuffer>>(undefined!);
+    startTime = signal<number>(0);
+    pauseTime = signal<number>(0);
 }

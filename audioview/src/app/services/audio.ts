@@ -55,7 +55,7 @@ export class AudioService {
 
     }
 
-    playSound = (startTime: number, pauseTime: number) => {
+    playSound = () => {
         if (!this.audioStore.audioBuffer()) return;
 
         if (this.audioStore.audioContext()!.state === "suspended") {
@@ -63,7 +63,7 @@ export class AudioService {
         }
 
         if (this.audioStore.sourceNode()) {
-            this.stop(pauseTime);
+            this.stop();
         }
 
         this.audioStore.analyzer.set(this.audioStore.audioContext()?.createAnalyser()!);
@@ -77,8 +77,8 @@ export class AudioService {
         this.audioStore.sourceNode()?.connect(this.audioStore.analyzer()!);
         this.audioStore.analyzer()?.connect(this.audioStore.audioContext()!.destination);
 
-        startTime = this.audioStore.audioContext()!.currentTime - pauseTime;
-        this.audioStore.sourceNode()!.start(0, pauseTime);
+        this.audioStore.startTime.set(this.audioStore.audioContext()!.currentTime - this.audioStore.pauseTime());
+        this.audioStore.sourceNode()!.start(0, this.audioStore.pauseTime());
 
         this.audioStore.sourceNode()!.onended = () => {
             this.audioStore.sourceNode.set(null);
@@ -86,19 +86,19 @@ export class AudioService {
 
     }
 
-    pauseSound = (startTime: number, pauseTime: number) => {
+    pauseSound = () => {
         if (!this.audioStore.sourceNode()) return;
 
-        pauseTime = this.audioStore.audioContext()!.currentTime - startTime;
+        this.audioStore.pauseTime.set(this.audioStore.audioContext()!.currentTime - this.audioStore.startTime());
 
         this.audioStore.sourceNode()!.stop();
         this.audioStore.sourceNode()!.disconnect();
         this.audioStore.sourceNode.set(null);
     }
 
-    stop = (pauseTime: number) => {
+    stop = () => {
         if (!this.audioStore.sourceNode()) return;
-        pauseTime = 0;
+        this.audioStore.pauseTime.set(0);
         this.audioStore.sourceNode()!.stop();
         this.audioStore.sourceNode()!.disconnect();
         this.audioStore.sourceNode.set(null);

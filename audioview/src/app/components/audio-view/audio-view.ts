@@ -104,20 +104,20 @@ export class AudioView {
   }
 
   playSound = () => {
-    this.audioService.playSound(this.startTime, this.pauseTime);
+    this.audioService.playSound();
     this.isPlaying = true;
     this.loop();
   }
 
   pauseSound = () => {
-    this.audioService.pauseSound(this.startTime, this.pauseTime);
+    this.audioService.pauseSound();
     this.isPlaying = false;
   }
 
   stop = () => {
-    this.audioService.stop(this.pauseTime);
+    this.audioService.stop();
     this.isPlaying = false;
-    this.pauseTime = 0;
+    this.audioStore.pauseTime.set(0);
   }
 
 }
