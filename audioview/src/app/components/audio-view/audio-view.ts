@@ -1,9 +1,25 @@
-import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, NgZone, ChangeDetectorRef, inject } from '@angular/core';
 import { AudioFrame, RadialPoint } from '../../types/audio';
 import { Bars } from '../bars/bars';
 import { Radial } from '../radial/radial';
 import { Wave } from "../wave/wave";
 import { UpdateGraphicsService } from '../../services/update-graphics';
+import { AudioStore } from '../../store/audio';
+import { AudioService } from '../../services/audio';
+/**
+ * 2 espacios
+ * 
+ * crear store para audio, tal vez configuracion del svg, tal vez para la configuracion
+ * de los graficos.
+ * 
+ * crear servicios que modifiquen los mismos.
+ * 
+ * crear componentes para los controles (pausa, play, stop).
+ * 
+ * crear funcionalidad para intencambiar de grafico en tiempo real.
+ *  
+ */
+
 
 @Component({
   selector: 'app-audio-view',
@@ -13,17 +29,12 @@ import { UpdateGraphicsService } from '../../services/update-graphics';
 })
 export class AudioView {
 
-  constructor(
-    private ngZone: NgZone,
-    private changeDetectorRef: ChangeDetectorRef,
-    private updateGraphicsService: UpdateGraphicsService
-  ) { }
+  audioStore = inject(AudioStore);
+  audioService = inject(AudioService);
+  ngZone = inject(NgZone);
+  changeDetectorRef = inject(ChangeDetectorRef);
+  updateGraphicsService = inject(UpdateGraphicsService);
 
-  audioContext = new AudioContext();
-  audioBuffer: AudioBuffer | null = null;
-  sourceNode: AudioBufferSourceNode | null = null;
-  analyzer!: AnalyserNode;
-  frequencyData!: Uint8Array<ArrayBuffer>;
   isPlaying = false;
   startTime = 0;
   pauseTime = 0;
@@ -58,8 +69,8 @@ export class AudioView {
     if (file.type.startsWith('audio/')) {
       file.arrayBuffer().then((buffer) => {
 
-        this.audioContext.decodeAudioData(buffer).then((audioBuffer) => {
-          this.audioBuffer = audioBuffer;
+        this.audioStore.audioContext()!.decodeAudioData(buffer).then((audioBuffer) => {
+          this.audioStore.audioBuffer.set(audioBuffer);
         });
 
       });
@@ -71,15 +82,15 @@ export class AudioView {
   }
 
   readFrenquecyData = () => {
-    if (!this.analyzer) return;
-    this.analyzer.getByteFrequencyData(this.frequencyData);
+    if (!this.audioStore.analyzer()) return;
+    this.audioStore.analyzer()!.getByteFrequencyData(this.audioStore.frecuencyData()!);
   }
 
   loop = () => {
     if (!this.isPlaying) return;
 
     this.readFrenquecyData();
-    const frame = this.createAudioFrame();
+    const frame = this.audioService.createAudioFrame();
 
     this.ngZone.run(() => {
       console.log({ frame });
@@ -92,120 +103,21 @@ export class AudioView {
     requestAnimationFrame(this.loop);
   }
 
-  createAudioFrame = (): AudioFrame | null => {
-
-    /**
-     * 
-     * Creamos un fotograma del audio, esto nos va ayudar a jugar con la ui.
-     * Ya que nos dice que datos hay por cada segundo del audio(fotograma).
-     * 
-     */
-
-
-    if (!this.analyzer) return null;
-
-    //leemos las frecuencias de nuestro audio
-    const freqData = new Uint8Array(this.analyzer.frequencyBinCount);
-    this.analyzer.getByteFrequencyData(freqData);
-
-    //leemos los datos del tiempo de nuestro audio para jugar si queremos hacer ondas
-    const timeData = new Uint8Array(this.analyzer.fftSize);
-    this.analyzer.getByteTimeDomainData(timeData);
-
-    const spectrum = Array.from(freqData, v => v / 255);
-    const waveform = Array.from(timeData, v => (v - 128) / 128);
-
-    //calculamos el promedio de las frecuencias para que nos diga cuan duro esta el sonido
-    let energySum = 0;
-    for (const v of spectrum) energySum += v;
-    const energy = energySum / spectrum.length;
-
-    const low = this.averageRange(spectrum, 0, 0.33); //graves
-    const mid = this.averageRange(spectrum, 0.33, 0.66); //medios
-    const high = this.averageRange(spectrum, 0.66, 1); //agudos
-
-    return {
-      time: this.audioContext.currentTime,
-      spectrum,
-      waveform,
-      energy,
-      bands: {
-        low,
-        mid,
-        high
-      }
-    }
-
-  }
-
-  averageRange = (data: number[], from: number, to: number): number => {
-    const start = Math.floor(data.length * from);
-    const end = Math.floor(data.length * to);
-    let sum = 0;
-
-    for (let i = start; i < end; i++) {
-      sum += data[i];
-    }
-
-    return sum / (end - start || 1);
-
-  }
-
   playSound = () => {
-    if (!this.audioBuffer) return;
-
-    if (this.audioContext.state === "suspended") {
-      this.audioContext.resume();
-    }
-
-    if (this.sourceNode) {
-      this.stop();
-    }
-
-    this.analyzer = this.audioContext.createAnalyser();
-    this.sourceNode = this.audioContext.createBufferSource();
-    this.analyzer.fftSize = 256;
-
-    this.frequencyData = new Uint8Array(this.analyzer.frequencyBinCount) as Uint8Array<ArrayBuffer>;
-
-    //conectando "voltimetro(analyzer) a la bateria(sourceNode)"
-    this.sourceNode.buffer = this.audioBuffer;
-    this.sourceNode.connect(this.analyzer);
-    this.analyzer.connect(this.audioContext.destination);
-
-    this.startTime = this.audioContext.currentTime - this.pauseTime;
-    this.sourceNode.start(0, this.pauseTime);
-
-    this.sourceNode.onended = () => {
-      this.sourceNode = null;
-      this.isPlaying = false;
-    };
-
+    this.audioService.playSound(this.startTime, this.pauseTime);
     this.isPlaying = true;
-
     this.loop();
-
   }
 
   pauseSound = () => {
-    if (!this.sourceNode) return;
-
-    this.pauseTime = this.audioContext.currentTime - this.startTime;
+    this.audioService.pauseSound(this.startTime, this.pauseTime);
     this.isPlaying = false;
-
-    this.sourceNode.stop();
-    this.sourceNode.disconnect();
-    this.sourceNode = null;
   }
 
   stop = () => {
-    if (!this.sourceNode) return;
+    this.audioService.stop(this.pauseTime);
     this.isPlaying = false;
     this.pauseTime = 0;
-    this.sourceNode.stop();
-    this.sourceNode.disconnect();
-    this.sourceNode = null;
   }
-
 
 }
