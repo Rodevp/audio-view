@@ -1,0 +1,9 @@
+.action__button {
+    font-size: 1.3rem;
+    padding: .5rem 1.5rem;
+    font-weight: 700;
+    border-radius: 1.25rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 3px solid #a877db;
+}

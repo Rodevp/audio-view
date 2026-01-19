@@ -1,8 +1,11 @@
 import { Component, NgZone, ChangeDetectorRef, inject } from '@angular/core';
 import { RadialPoint } from '../../types/audio';
+
 import { Bars } from '../bars/bars';
 import { Radial } from '../radial/radial';
 import { Wave } from "../wave/wave";
+import { ActionButton } from '../action-button/action-button';
+
 import { UpdateGraphicsService } from '../../services/update-graphics';
 import { AudioStore } from '../../store/audio';
 import { AudioService } from '../../services/audio';
@@ -18,7 +21,7 @@ import { AudioService } from '../../services/audio';
 
 @Component({
   selector: 'app-audio-view',
-  imports: [Bars],
+  imports: [Bars, ActionButton],
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
