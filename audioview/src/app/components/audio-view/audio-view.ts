@@ -36,7 +36,7 @@ export class AudioView {
 
   currentGraphic = 'bars';
   svgWidth = 600;
-  svgHeight = 200;
+  svgHeight = 250;
 
   //bars config
   barsCount = 8;

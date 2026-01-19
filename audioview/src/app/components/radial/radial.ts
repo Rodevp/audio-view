@@ -9,8 +9,8 @@ import { Component, input, OnInit } from '@angular/core';
 export class Radial implements OnInit {
   radialPoints = input<{ x: number, y: number, angle: number }[]>();
   radialIntensity = input<number>();
+  svgHeight = input<number>(250);
   svgWidth = 600;
-  svgHeight = 200;
   radialPointsCount = 12;
   radialBaseRadius = 100;
   radialMaxOffset = 10;
@@ -18,7 +18,7 @@ export class Radial implements OnInit {
 
   initRadial = () => {
     const centerX = this.svgWidth / 2;
-    const centerY = this.svgHeight / 2;
+    const centerY = this.svgHeight() / 2;
 
     for (let i = 0; i < this.radialPointsCount; i++) {
       const angle = (Math.PI * 2 / this.radialPointsCount) * i;

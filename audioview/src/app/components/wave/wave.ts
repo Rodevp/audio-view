@@ -8,5 +8,5 @@ import { Component, input } from '@angular/core';
 })
 export class Wave {
   wavePath = input<string>("");
-
+  svgHeight = input<number>(250);
 }

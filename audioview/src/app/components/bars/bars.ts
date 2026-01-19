@@ -9,6 +9,6 @@ import { Component, input } from '@angular/core';
 export class Bars {
   bars = input<number[]>([]);
   svgWidth = input<number>(600);
-  svgHeight = input<number>(200);
+  svgHeight = input<number>(250);
   barsCount = input<number>(28);
 }
