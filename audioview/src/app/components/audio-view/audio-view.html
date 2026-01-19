@@ -5,19 +5,27 @@
     </section>
 
     <section class="container__bars">
+        @if(currentGraphic === 'bars') {
         <app-bars [bars]="bars" [svgWidth]="svgWidth" [svgHeight]="svgHeight" [barsCount]="barsCount"></app-bars>
+        }
+        @if (currentGraphic == 'wave') {
+        <app-wave [wavePath]="wavePath"></app-wave>
+        }
+        @if (currentGraphic == 'radial') {
+        <app-radial [radialPoints]="radialPoints" [radialIntensity]="radialIntensity"></app-radial>
+        }
     </section>
 
     <section class="container__controls">
         <div>
-            <app-action-button text="Play"></app-action-button>
-            <app-action-button text="Pause"></app-action-button>
-            <app-action-button text="Stop"></app-action-button>
+            <app-action-button text="Play" (click)="playSound()"></app-action-button>
+            <app-action-button text="Pause" (click)="pauseSound()"></app-action-button>
+            <app-action-button text="Stop" (click)="stop()"></app-action-button>
         </div>
         <div>
-            <app-action-button text="Wave"></app-action-button>
-            <app-action-button text="Radial"></app-action-button>
-            <app-action-button text="Bars"></app-action-button>
+            <app-action-button text="Wave" (click)="changeGraphic('wave')"></app-action-button>
+            <app-action-button text="Radial" (click)="changeGraphic('radial')"></app-action-button>
+            <app-action-button text="Bars" (click)="changeGraphic('bars')"></app-action-button>
         </div>
     </section>
 

@@ -21,7 +21,7 @@ import { AudioService } from '../../services/audio';
 
 @Component({
   selector: 'app-audio-view',
-  imports: [Bars, ActionButton],
+  imports: [Bars, Radial, Wave, ActionButton],
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
@@ -32,9 +32,9 @@ export class AudioView {
   ngZone = inject(NgZone);
   changeDetectorRef = inject(ChangeDetectorRef);
   updateGraphicsService = inject(UpdateGraphicsService);
-
   isPlaying = false;
 
+  currentGraphic = 'bars';
   svgWidth = 600;
   svgHeight = 200;
 
@@ -75,6 +75,10 @@ export class AudioView {
       console.log("No es un archivo valido");
     }
 
+  }
+
+  changeGraphic = (graphic: string) => {
+    this.currentGraphic = graphic;
   }
 
   readFrenquecyData = () => {
