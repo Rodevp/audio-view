@@ -6,4 +6,12 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     border: 3px solid #a877db;
+    transition: all 0.3s ease;
+
+    &:hover {
+        cursor: pointer;
+        color: #fff;
+        background-color: #a877db;
+    }
+
 }
