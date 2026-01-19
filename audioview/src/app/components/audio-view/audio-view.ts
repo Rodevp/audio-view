@@ -1,10 +1,11 @@
-import { Component, NgZone, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, NgZone, ChangeDetectorRef, inject, ViewChild, ElementRef } from '@angular/core';
 import { RadialPoint } from '../../types/audio';
 
 import { Bars } from '../bars/bars';
 import { Radial } from '../radial/radial';
 import { Wave } from "../wave/wave";
 import { ActionButton } from '../action-button/action-button';
+import { IconButton } from "../icon-button/icon-button";
 
 import { UpdateGraphicsService } from '../../services/update-graphics';
 import { AudioStore } from '../../store/audio';
@@ -21,11 +22,13 @@ import { AudioService } from '../../services/audio';
 
 @Component({
   selector: 'app-audio-view',
-  imports: [Bars, Radial, Wave, ActionButton],
+  imports: [Bars, Radial, Wave, ActionButton, IconButton],
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
 export class AudioView {
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   audioStore = inject(AudioStore);
   audioService = inject(AudioService);
@@ -75,6 +78,10 @@ export class AudioView {
       console.log("No es un archivo valido");
     }
 
+  }
+
+  openFileDialog = () => {
+    this.fileInput.nativeElement.click();
   }
 
   changeGraphic = (graphic: string) => {

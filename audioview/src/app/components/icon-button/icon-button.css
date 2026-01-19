@@ -1,0 +1,7 @@
+.icon__button {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+}

@@ -1,7 +1,14 @@
 <main class="container">
     <section class="container__header">
         <h1>Audio Viewer</h1>
-        <input type="file" accept="audio/*" (change)="onFileCharge($event)" />
+        <div class="container__header__controls">
+            <div>
+                <input type="file" accept="audio/*" (change)="onFileCharge($event)" #fileInput hidden />
+                <app-icon-button (click)="openFileDialog()"></app-icon-button>
+            </div>
+            <app-icon-button></app-icon-button>
+            <app-icon-button></app-icon-button>
+        </div>
     </section>
 
     <section class="container__bars">
