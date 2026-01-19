@@ -18,7 +18,7 @@ import { AudioService } from '../../services/audio';
 
 @Component({
   selector: 'app-audio-view',
-  imports: [Bars, Radial, Wave],
+  imports: [Bars],
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
@@ -36,7 +36,7 @@ export class AudioView {
   svgHeight = 200;
 
   //bars config
-  barsCount = 28;
+  barsCount = 8;
   bars: number[] = new Array(this.barsCount).fill(10);
 
   //radial config
