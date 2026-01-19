@@ -1,4 +1,5 @@
 import { Component, NgZone, ChangeDetectorRef, inject, ViewChild, ElementRef } from '@angular/core';
+import { LucideAngularModule, Upload, Moon, Sun } from "lucide-angular";
 import { RadialPoint } from '../../types/audio';
 
 import { Bars } from '../bars/bars';
@@ -10,25 +11,19 @@ import { IconButton } from "../icon-button/icon-button";
 import { UpdateGraphicsService } from '../../services/update-graphics';
 import { AudioStore } from '../../store/audio';
 import { AudioService } from '../../services/audio';
-/**
- * 2 espacios
- * 
- * crear componente para los controles (pausa, play, stop).
- * 
- * crear funcionalidad para intencambiar de grafico en tiempo real.
- *  
- */
-
 
 @Component({
   selector: 'app-audio-view',
-  imports: [Bars, Radial, Wave, ActionButton, IconButton],
+  imports: [Bars, Radial, Wave, ActionButton, IconButton, LucideAngularModule],
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
 export class AudioView {
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  readonly UploadIcon = Upload;
+  readonly MoonIcon = Moon;
+  readonly SunIcon = Sun;
 
   audioStore = inject(AudioStore);
   audioService = inject(AudioService);
@@ -36,6 +31,7 @@ export class AudioView {
   changeDetectorRef = inject(ChangeDetectorRef);
   updateGraphicsService = inject(UpdateGraphicsService);
   isPlaying = false;
+  theme = 'light';
 
   currentGraphic = 'bars';
   svgWidth = 600;
@@ -82,6 +78,10 @@ export class AudioView {
 
   openFileDialog = () => {
     this.fileInput.nativeElement.click();
+  }
+
+  changeTheme = () => {
+    this.theme = this.theme === 'dark' ? 'light' : 'dark';
   }
 
   changeGraphic = (graphic: string) => {

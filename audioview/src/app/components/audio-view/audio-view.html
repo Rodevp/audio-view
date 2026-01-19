@@ -4,10 +4,18 @@
         <div class="container__header__controls">
             <div>
                 <input type="file" accept="audio/*" (change)="onFileCharge($event)" #fileInput hidden />
-                <app-icon-button (click)="openFileDialog()"></app-icon-button>
+                <app-icon-button (click)="openFileDialog()">
+                    <lucide-icon [name]="UploadIcon" size="15"></lucide-icon>
+                </app-icon-button>
             </div>
-            <app-icon-button></app-icon-button>
-            <app-icon-button></app-icon-button>
+            <app-icon-button (click)="changeTheme()">
+                @if (theme === 'dark') {
+                <lucide-icon [name]="SunIcon" size="15"></lucide-icon>
+                }
+                @else {
+                <lucide-icon [name]="MoonIcon" size="15"></lucide-icon>
+                }
+            </app-icon-button>
         </div>
     </section>
 
