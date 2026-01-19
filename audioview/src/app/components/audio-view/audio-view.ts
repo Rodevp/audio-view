@@ -44,8 +44,8 @@ export class AudioView {
 
   //radial config
   radialPointsCount = 12;
-  radialBaseRadius = 100;
-  radialIntensity = 5;
+  radialBaseRadius = 40;
+  radialIntensity = 8;
   radialMaxOffset = 10;
   radialPoints: RadialPoint[] = [];
 
