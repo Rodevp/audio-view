@@ -1,4 +1,4 @@
-<svg width="600" height="200" viewBox="0 0 600 200">
+<svg width="600" [attr.height]="svgHeight()" viewBox="0 0 600 200">
     @for (bar of bars(); track $index) {
     <rect [attr.x]="$index * (svgWidth() / barsCount())" [attr.y]="svgHeight() - bar"
         [attr.width]="svgWidth() / barsCount()" [attr.height]="bar" fill="black" />
