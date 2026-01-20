@@ -8,4 +8,5 @@ import { Component, input } from '@angular/core';
 })
 export class ActionButton {
   text = input<string>("");
+  selected = input<boolean>(false);
 }

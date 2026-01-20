@@ -32,6 +32,7 @@ export class AudioView {
   updateGraphicsService = inject(UpdateGraphicsService);
   isPlaying = false;
   theme = 'light';
+  selected = "";
 
   currentGraphic = 'bars';
   svgWidth = 600;
@@ -86,6 +87,12 @@ export class AudioView {
 
   changeGraphic = (graphic: string) => {
     this.currentGraphic = graphic;
+    this.selected = graphic;
+  }
+
+  changeSelected = (option: string) => {
+    console.log(option);
+    this.selected = option;
   }
 
   readFrenquecyData = () => {

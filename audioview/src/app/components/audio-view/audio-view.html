@@ -34,14 +34,20 @@
 
     <section class="container__controls">
         <div>
-            <app-action-button text="Play" (click)="playSound()"></app-action-button>
-            <app-action-button text="Pause" (click)="pauseSound()"></app-action-button>
-            <app-action-button text="Stop" (click)="stop()"></app-action-button>
+            <app-action-button [selected]="selected === 'play'" text="Play"
+                (click)="playSound(); changeSelected('play')"></app-action-button>
+            <app-action-button [selected]="selected === 'pause'" text="Pause"
+                (click)="pauseSound(); changeSelected('pause')"></app-action-button>
+            <app-action-button [selected]="selected === 'stop'" text="Stop"
+                (click)="stop(); changeSelected('stop')"></app-action-button>
         </div>
         <div>
-            <app-action-button text="Wave" (click)="changeGraphic('wave')"></app-action-button>
-            <app-action-button text="Radial" (click)="changeGraphic('radial')"></app-action-button>
-            <app-action-button text="Bars" (click)="changeGraphic('bars')"></app-action-button>
+            <app-action-button [selected]="selected === 'wave'" text="Wave"
+                (click)="changeGraphic('wave')"></app-action-button>
+            <app-action-button [selected]="selected === 'radial'" text="Radial"
+                (click)="changeGraphic('radial')"></app-action-button>
+            <app-action-button [selected]="selected === 'bars'" text="Bars"
+                (click)="changeGraphic('bars')"></app-action-button>
         </div>
     </section>
 
