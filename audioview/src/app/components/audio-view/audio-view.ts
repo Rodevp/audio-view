@@ -1,4 +1,4 @@
-import { Component, NgZone, ChangeDetectorRef, inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, NgZone, ChangeDetectorRef, inject, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { LucideAngularModule, Upload, Moon, Sun } from "lucide-angular";
 import { RadialPoint } from '../../types/audio';
 
@@ -18,7 +18,7 @@ import { AudioService } from '../../services/audio';
   templateUrl: './audio-view.html',
   styleUrl: './audio-view.css',
 })
-export class AudioView {
+export class AudioView implements OnInit {
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   readonly UploadIcon = Upload;
@@ -83,6 +83,8 @@ export class AudioView {
 
   changeTheme = () => {
     this.theme = this.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', this.theme);
+    localStorage.setItem('theme', this.theme);
   }
 
   changeGraphic = (graphic: string) => {
@@ -132,6 +134,19 @@ export class AudioView {
     this.audioService.stop();
     this.isPlaying = false;
     this.audioStore.pauseTime.set(0);
+  }
+
+  getInitialTheme(): 'dark' | 'light' {
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
+    if (savedTheme) return savedTheme;
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return prefersDark ? 'dark' : 'light';
+  }
+
+  ngOnInit(): void {
+    this.theme = this.getInitialTheme();
+    document.documentElement.setAttribute('data-theme', this.theme);
   }
 
 }

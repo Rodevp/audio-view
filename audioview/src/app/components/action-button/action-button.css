@@ -7,6 +7,7 @@
     text-transform: uppercase;
     border: 3px solid #a877db;
     transition: all 0.3s ease;
+    background-color: light-dark(var(--light), var(--dark));
 
     &:hover {
         cursor: pointer;
@@ -18,5 +19,5 @@
 
 .selected {
     color: #fff;
-    background-color: #0a0a0a;
+    background-color: light-dark(var(--selected-light), var(--selected-dark));
 }

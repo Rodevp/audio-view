@@ -5,10 +5,12 @@
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
-    background-color: #ffffff;
+    background-color: light-dark(var(--light), var(--dark));
+    color: light-dark(var(--dark), var(--light));
 
     &:hover {
         cursor: pointer;
-        background-color: #ebebeb;
+        color: light-dark(#ffffff, #0a0a0a);
+        background-color: light-dark(#a877db, var(--selected-dark));
     }
 }

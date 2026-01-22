@@ -1,3 +1,19 @@
+:root {
+    color-scheme: light dark;
+    --dark: #0a0a0a;
+    --light: #ffffff;
+    --selected-dark: #a877db;
+    --selected-light: #0a0a0a;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+}
+
 @font-face {
     font-family: 'Geist Mono';
     src: url('./fonts/GeistMono.ttf');
@@ -5,10 +21,10 @@
     font-style: normal;
 }
 
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Geist Mono', monospace;
+    transition: background-color 0.3s ease;
 }
